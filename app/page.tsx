@@ -14,6 +14,16 @@ function NationalityInput({ show, value, onChange }) {
   }
 }
 
+function CodeWindow({ show, json }) {
+  if (show) {
+    return (
+      <CodeSnippet type="multi" feedback="Copied to clipboard">{json}</CodeSnippet>
+    );
+  } else {
+    return null;
+  }
+}
+
 export default function Home() {
   // Hooks for form fields
   const [applicantName, setApplicantName] = useState('');
@@ -25,8 +35,9 @@ export default function Home() {
   const [indigenous, setIndigenous] = useState(false);
   const [nationality, setNationality] = useState('');
   
-  // Hook for toggling visibility of NationalityInput
+  // Hook for toggling visibility of components
   const [showNationalityInput, setShowNationalityInput] = useState(false);
+  const [showCodeWindow, setShowCodeWindow] = useState(false);
 
   // Hook for JSON string
   const [json, setJson] = useState('');
@@ -55,7 +66,9 @@ export default function Home() {
   "indigenous": ${indigenous},
   "nationality": "${nationality}"
 }`
+    // Set JSON and make code window visible
     setJson(formString)
+    setShowCodeWindow(true)
   }
 
   return (
@@ -88,7 +101,7 @@ export default function Home() {
               <Button type="submit">Submit</Button>
             </Form>
             <div>
-              <CodeSnippet type="multi" feedback="Copied to clipboard">{json}</CodeSnippet>
+              <CodeWindow show={showCodeWindow} json={json}/>
             </div>
           </main>
 
