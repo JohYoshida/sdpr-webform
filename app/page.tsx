@@ -2,7 +2,7 @@
 import { useState } from 'react'
 
 import { FlexGrid, Row, Column } from '@carbon/react'
-import { Form, Button, Checkbox, DatePicker, DatePickerInput, RadioButton, RadioButtonGroup, TextInput } from '@carbon/react'
+import { Form, Button, Checkbox, CodeSnippet, DatePicker, DatePickerInput, RadioButton, RadioButtonGroup, TextInput } from '@carbon/react'
 
 function NationalityInput({ show, value, onChange }) {
   if (show) {
@@ -16,11 +16,20 @@ function NationalityInput({ show, value, onChange }) {
 
 export default function Home() {
   // Hooks for form fields
+  const [applicantName, setApplicantName] = useState('');
+  const [maritalStatus, setMaritalStatus] = useState('');
+  const [address, setAddress] = useState('');
+  const [birthDate, setBirthDate] = useState('');
+  const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
   const [indigenous, setIndigenous] = useState(false);
   const [nationality, setNationality] = useState('');
   
   // Hook for toggling visibility of NationalityInput
   const [showNationalityInput, setShowNationalityInput] = useState(false);
+
+  // Hook for JSON string
+  const [json, setJson] = useState('');
   
   // Toggle visibility of NationalityInput
   const toggleNationalityInput = (event, { checked: indigenous, id }) => { 
@@ -32,6 +41,23 @@ export default function Home() {
     }
     setIndigenous(indigenous)
   }
+
+  const submit = () => {
+    // Construct and format JSON object as a string
+    // The lack of indentation within the template literal is necessary for the string to render correctly
+    const formString = `{
+  "applicantName": ${applicantName},
+  "maritalStatus": ${maritalStatus},
+  "address": ${address},
+  "birthDate": ${birthDate},
+  "email": ${email},
+  "phone": ${phone},
+  "indigenous": ${indigenous},
+  "nationality": ${nationality}
+}`
+    setJson(formString)
+  }
+
   return (
     <FlexGrid>
       <Row>
@@ -41,9 +67,9 @@ export default function Home() {
           </header>
 
           <main>
-            <Form aria-label="form body">
-              <TextInput id="applicant-name" labelText="Applicant Name (required)" required={true} />
-              <RadioButtonGroup legendText="Marital Status" name="Marital Status" orientation="vertical" defaultChecked={false} >
+            <Form aria-label="form body" action={submit}>
+              <TextInput id="applicant-name" labelText="Applicant Name (required)" required={true} value={applicantName} onChange={e => setApplicantName(e.target.value)} />
+              <RadioButtonGroup legendText="Marital Status" name="Marital Status" orientation="horizontal" defaultChecked={false} value={maritalStatus} onChange={v => setMaritalStatus(v)} >
                 <RadioButton id="married" labelText="Married" value="married" />
                 <RadioButton id="common-law" labelText="Living common-law" value="common-law" />
                 <RadioButton id="separated" labelText="Separated" value="separated" />
@@ -51,18 +77,18 @@ export default function Home() {
                 <RadioButton id="divorced" labelText="Divorced" value="divorced" />
                 <RadioButton id="single" labelText="Single" value="single" />
               </RadioButtonGroup>
-              <TextInput id="canadian-address" labelText="Canadian Address" />
-              <DatePicker datePickerType="single">
+              <TextInput id="canadian-address" labelText="Canadian Address" onChange={e => setAddress(e.target.value)} value={address} />
+              <DatePicker datePickerType="single" value={birthDate} onChange={e => setBirthDate(e[0])}>
                 <DatePickerInput id="date-of-birth" labelText="Date of Birth" placeholder="mm/dd/yyyy" />
               </DatePicker>
-              <TextInput id="email" labelText="Email" />
-              <TextInput id="phone" labelText="Canadian Phone Number" />
+              <TextInput id="email" labelText="Email" value={email} onChange={e => setEmail(e.target.value)} />
+              <TextInput id="phone" labelText="Canadian Phone Number" value={phone} onChange={e => setPhone(e.target.value)} />
               <Checkbox  id="Indigenous" labelText="I identify as Indigenous" onChange={(event, { checked, id }) => toggleNationalityInput(event, { checked, id })} />
               <NationalityInput show={showNationalityInput} value={nationality} onChange={e => setNationality(e.target.value)} />
               <Button type="submit">Submit</Button>
             </Form>
             <div>
-              
+              <CodeSnippet type="multi" feedback="Copied to clipboard">{json}</CodeSnippet>
             </div>
           </main>
 
