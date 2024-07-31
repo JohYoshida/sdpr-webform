@@ -1,9 +1,37 @@
 'use client'
+import { useState } from 'react'
 
 import { FlexGrid, Row, Column } from '@carbon/react'
 import { Form, Button, Checkbox, DatePicker, DatePickerInput, RadioButton, RadioButtonGroup, TextInput } from '@carbon/react'
 
+function NationalityInput({ show, value, onChange }) {
+  if (show) {
+    return (
+      <TextInput id="nationality" labelText="Nationality" value={value} onChange={onChange} />
+    );
+  } else {
+    return null;
+  }
+}
+
 export default function Home() {
+  // Hooks for form fields
+  const [indigenous, setIndigenous] = useState(false);
+  const [nationality, setNationality] = useState('');
+  
+  // Hook for toggling visibility of NationalityInput
+  const [showNationalityInput, setShowNationalityInput] = useState(false);
+  
+  // Toggle visibility of NationalityInput
+  const toggleNationalityInput = (event, { checked: indigenous, id }) => { 
+    if (indigenous) {
+      setShowNationalityInput(true); 
+    } else {
+      setShowNationalityInput(false);
+      setNationality(''); // clear NationalityInput value
+    }
+    setIndigenous(indigenous)
+  }
   return (
     <FlexGrid>
       <Row>
@@ -29,8 +57,8 @@ export default function Home() {
               </DatePicker>
               <TextInput id="email" labelText="Email" />
               <TextInput id="phone" labelText="Canadian Phone Number" />
-              <Checkbox  id="Indigenous" labelText="I identify as Indigenous" />
-              <TextInput id="nationality" labelText="Nationality" />
+              <Checkbox  id="Indigenous" labelText="I identify as Indigenous" onChange={(event, { checked, id }) => toggleNationalityInput(event, { checked, id })} />
+              <NationalityInput show={showNationalityInput} value={nationality} onChange={e => setNationality(e.target.value)} />
               <Button type="submit">Submit</Button>
             </Form>
             <div>
