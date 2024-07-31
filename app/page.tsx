@@ -94,7 +94,7 @@ export default function Home() {
 
           <footer>
             <div>
-              This is not an official BC SDPR form! This is Joh Yoshida's submission for the ISL 18R Full Stack Developer competition. Thank you for your consideration :)
+              This is not an official BC SDPR form! This is Joh Yoshida{`'`}s submission for the ISL 18R Full Stack Developer competition. Thank you for your consideration :{`)`}
             </div>
           </footer>
         </Column>
