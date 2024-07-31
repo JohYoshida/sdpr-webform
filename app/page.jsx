@@ -7,7 +7,7 @@ import { Form, Button, Checkbox, CodeSnippet, DatePicker, DatePickerInput, Radio
 function NationalityInput({ show, value, onChange }) {
   if (show) {
     return (
-      <TextInput id="nationality" labelText="Nationality" value={value} onChange={onChange} />
+      <TextInput id="nationality" labelText="Nationality" className="field-margin" value={value} onChange={onChange} />
     );
   } else {
     return null;
@@ -80,9 +80,9 @@ export default function Home() {
           </header>
 
           <main>
-            <Form aria-label="form body" action={submit}>
-              <TextInput id="applicant-name" labelText="Applicant Name (required)" required={true} value={applicantName} onChange={e => setApplicantName(e.target.value)} />
-              <RadioButtonGroup legendText="Marital Status" name="Marital Status" orientation="horizontal" defaultChecked={false} value={maritalStatus} onChange={v => setMaritalStatus(v)} >
+            <Form aria-label="form body" action={submit}>              
+              <TextInput id="applicant-name" labelText="Applicant Name (required)" className="field-margin" required={true} value={applicantName} onChange={e => setApplicantName(e.target.value)} />
+              <RadioButtonGroup legendText="Marital Status" name="Marital Status" orientation="vertical" className="field-margin" defaultChecked={false} value={maritalStatus} onChange={v => setMaritalStatus(v)} >
                 <RadioButton id="married" labelText="Married" value="married" />
                 <RadioButton id="common-law" labelText="Living common-law" value="common-law" />
                 <RadioButton id="separated" labelText="Separated" value="separated" />
@@ -90,15 +90,15 @@ export default function Home() {
                 <RadioButton id="divorced" labelText="Divorced" value="divorced" />
                 <RadioButton id="single" labelText="Single" value="single" />
               </RadioButtonGroup>
-              <TextInput id="canadian-address" labelText="Canadian Address" onChange={e => setAddress(e.target.value)} value={address} />
-              <DatePicker datePickerType="single" value={birthDate} onChange={e => setBirthDate(e[0])}>
-                <DatePickerInput id="date-of-birth" labelText="Date of Birth" placeholder="mm/dd/yyyy" />
+              <TextInput id="canadian-address" labelText="Canadian Address" className="field-margin" onChange={e => setAddress(e.target.value)} value={address} />
+              <DatePicker datePickerType="single" className="field-margin" value={birthDate} onChange={e => setBirthDate(e[0])}>
+                <DatePickerInput id="date-of-birth" labelText="Date of Birth" placeholder="mm/dd/yyyy" className="field-margin" />
               </DatePicker>
-              <TextInput id="email" labelText="Email" value={email} onChange={e => setEmail(e.target.value)} />
-              <TextInput id="phone" labelText="Canadian Phone Number" value={phone} onChange={e => setPhone(e.target.value)} />
-              <Checkbox  id="Indigenous" labelText="I identify as Indigenous" onChange={(event, { checked, id }) => toggleNationalityInput(event, { checked, id })} />
+              <TextInput id="email" labelText="Email" className="field-margin" value={email} onChange={e => setEmail(e.target.value)} />
+              <TextInput id="phone" labelText="Canadian Phone Number" className="field-margin" value={phone} onChange={e => setPhone(e.target.value)} />
+              <Checkbox  id="Indigenous" labelText="I identify as Indigenous" className="field-margin" onChange={(event, { checked, id }) => toggleNationalityInput(event, { checked, id })} />
               <NationalityInput show={showNationalityInput} value={nationality} onChange={e => setNationality(e.target.value)} />
-              <Button type="submit">Submit</Button>
+              <Button type="submit" className="button-margin">Submit</Button>
             </Form>
             <div>
               <CodeWindow show={showCodeWindow} json={json}/>
@@ -107,7 +107,9 @@ export default function Home() {
 
           <footer>
             <div>
-              This is not an official BC SDPR form! This is Joh Yoshida{`'`}s submission for the ISL 18R Full Stack Developer competition. Thank you for your consideration :{`)`}
+              <p>This is not an official BC SDPR form!</p>
+              <p>This is Joh Yoshida{`'`}s submission for the ISL 18R Full Stack Developer competition.</p> 
+              <p>Thank you for your consideration :{`)`}</p>
             </div>
           </footer>
         </Column>
