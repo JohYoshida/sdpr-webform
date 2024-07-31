@@ -46,14 +46,14 @@ export default function Home() {
     // Construct and format JSON object as a string
     // The lack of indentation within the template literal is necessary for the string to render correctly
     const formString = `{
-  "applicantName": ${applicantName},
-  "maritalStatus": ${maritalStatus},
-  "address": ${address},
-  "birthDate": ${birthDate},
-  "email": ${email},
-  "phone": ${phone},
+  "applicantName": "${applicantName}",
+  "maritalStatus": "${maritalStatus}",
+  "address": "${address}",
+  "birthDate": "${birthDate}",
+  "email": "${email}",
+  "phone": "${phone}",
   "indigenous": ${indigenous},
-  "nationality": ${nationality}
+  "nationality": "${nationality}"
 }`
     setJson(formString)
   }
