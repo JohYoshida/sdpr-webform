@@ -1,114 +1,104 @@
 'use client'
-import Image from "next/image";
+import { useState } from 'react'
+
+import { FlexGrid, Row, Column } from '@carbon/react'
+import { Form, Button, Checkbox, CodeSnippet, DatePicker, DatePickerInput, RadioButton, RadioButtonGroup, TextInput } from '@carbon/react'
+
+function NationalityInput({ show, value, onChange }) {
+  if (show) {
+    return (
+      <TextInput id="nationality" labelText="Nationality" value={value} onChange={onChange} />
+    );
+  } else {
+    return null;
+  }
+}
 
 export default function Home() {
+  // Hooks for form fields
+  const [applicantName, setApplicantName] = useState('');
+  const [maritalStatus, setMaritalStatus] = useState('');
+  const [address, setAddress] = useState('');
+  const [birthDate, setBirthDate] = useState('');
+  const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
+  const [indigenous, setIndigenous] = useState(false);
+  const [nationality, setNationality] = useState('');
+  
+  // Hook for toggling visibility of NationalityInput
+  const [showNationalityInput, setShowNationalityInput] = useState(false);
+
+  // Hook for JSON string
+  const [json, setJson] = useState('');
+  
+  // Toggle visibility of NationalityInput
+  const toggleNationalityInput = (event, { checked: indigenous, id }) => { 
+    if (indigenous) {
+      setShowNationalityInput(true); 
+    } else {
+      setShowNationalityInput(false);
+      setNationality(''); // clear NationalityInput value
+    }
+    setIndigenous(indigenous)
+  }
+
+  const submit = () => {
+    // Construct and format JSON object as a string
+    // The lack of indentation within the template literal is necessary for the string to render correctly
+    const formString = `{
+  "applicantName": ${applicantName},
+  "maritalStatus": ${maritalStatus},
+  "address": ${address},
+  "birthDate": ${birthDate},
+  "email": ${email},
+  "phone": ${phone},
+  "indigenous": ${indigenous},
+  "nationality": ${nationality}
+}`
+    setJson(formString)
+  }
+
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <div className="z-10 w-full max-w-5xl items-center justify-between font-mono text-sm lg:flex">
-        <p className="fixed left-0 top-0 flex w-full justify-center border-b border-gray-300 bg-gradient-to-b from-zinc-200 pb-6 pt-8 backdrop-blur-2xl dark:border-neutral-800 dark:bg-zinc-800/30 dark:from-inherit lg:static lg:w-auto  lg:rounded-xl lg:border lg:bg-gray-200 lg:p-4 lg:dark:bg-zinc-800/30">
-          Get started by editing&nbsp;
-          <code className="font-mono font-bold">app/page.tsx</code>
-        </p>
-        <div className="fixed bottom-0 left-0 flex h-48 w-full items-end justify-center bg-gradient-to-t from-white via-white dark:from-black dark:via-black lg:static lg:size-auto lg:bg-none">
-          <a
-            className="pointer-events-none flex place-items-center gap-2 p-8 lg:pointer-events-auto lg:p-0"
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{" "}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className="dark:invert"
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
-        </div>
-      </div>
+    <FlexGrid>
+      <Row>
+        <Column>
+          <header>
+            <h1>Ministry of Social Development and Poverty Reduction</h1>
+          </header>
 
-      <div className="relative z-[-1] flex place-items-center before:absolute before:h-[300px] before:w-full before:-translate-x-1/2 before:rounded-full before:bg-gradient-radial before:from-white before:to-transparent before:blur-2xl before:content-[''] after:absolute after:-z-20 after:h-[180px] after:w-full after:translate-x-1/3 after:bg-gradient-conic after:from-sky-200 after:via-blue-200 after:blur-2xl after:content-[''] before:dark:bg-gradient-to-br before:dark:from-transparent before:dark:to-blue-700 before:dark:opacity-10 after:dark:from-sky-900 after:dark:via-[#0141ff] after:dark:opacity-40 sm:before:w-[480px] sm:after:w-[240px] before:lg:h-[360px]">
-        <Image
-          className="relative dark:drop-shadow-[0_0_0.3rem_#ffffff70] dark:invert"
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
+          <main>
+            <Form aria-label="form body" action={submit}>
+              <TextInput id="applicant-name" labelText="Applicant Name (required)" required={true} value={applicantName} onChange={e => setApplicantName(e.target.value)} />
+              <RadioButtonGroup legendText="Marital Status" name="Marital Status" orientation="horizontal" defaultChecked={false} value={maritalStatus} onChange={v => setMaritalStatus(v)} >
+                <RadioButton id="married" labelText="Married" value="married" />
+                <RadioButton id="common-law" labelText="Living common-law" value="common-law" />
+                <RadioButton id="separated" labelText="Separated" value="separated" />
+                <RadioButton id="widowed" labelText="Widowed" value="widowed" />
+                <RadioButton id="divorced" labelText="Divorced" value="divorced" />
+                <RadioButton id="single" labelText="Single" value="single" />
+              </RadioButtonGroup>
+              <TextInput id="canadian-address" labelText="Canadian Address" onChange={e => setAddress(e.target.value)} value={address} />
+              <DatePicker datePickerType="single" value={birthDate} onChange={e => setBirthDate(e[0])}>
+                <DatePickerInput id="date-of-birth" labelText="Date of Birth" placeholder="mm/dd/yyyy" />
+              </DatePicker>
+              <TextInput id="email" labelText="Email" value={email} onChange={e => setEmail(e.target.value)} />
+              <TextInput id="phone" labelText="Canadian Phone Number" value={phone} onChange={e => setPhone(e.target.value)} />
+              <Checkbox  id="Indigenous" labelText="I identify as Indigenous" onChange={(event, { checked, id }) => toggleNationalityInput(event, { checked, id })} />
+              <NationalityInput show={showNationalityInput} value={nationality} onChange={e => setNationality(e.target.value)} />
+              <Button type="submit">Submit</Button>
+            </Form>
+            <div>
+              <CodeSnippet type="multi" feedback="Copied to clipboard">{json}</CodeSnippet>
+            </div>
+          </main>
 
-      <div className="mb-32 grid text-center lg:mb-0 lg:w-full lg:max-w-5xl lg:grid-cols-4 lg:text-left">
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Docs{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-sm opacity-50">
-            Find in-depth information about Next.js features and API.
-          </p>
-        </a>
-
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Learn{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-sm opacity-50">
-            Learn about Next.js in an interactive course with&nbsp;quizzes!
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Templates{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-sm opacity-50">
-            Explore starter templates for Next.js.
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Deploy{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-balance text-sm opacity-50">
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
-    </main>
+          <footer>
+            <div>
+              This is not an official BC SDPR form! This is Joh Yoshida's submission for the ISL 18R Full Stack Developer competition. Thank you for your consideration :)
+            </div>
+          </footer>
+        </Column>
+      </Row>
+    </FlexGrid>
   );
 }
