@@ -2,6 +2,7 @@
 import { useState } from 'react'
 import { FlexGrid, Row, Column } from '@carbon/react'
 import { Form, Button, Checkbox, CodeSnippet, DatePicker, DatePickerInput, RadioButton, RadioButtonGroup, TextInput } from '@carbon/react'
+import { isValidPhoneNumber, parsePhoneNumber } from 'libphonenumber-js'
 import Image from 'next/image'
 import logo from '../public/SDPR logo.png'
 
@@ -40,8 +41,9 @@ export default function Home() {
   const [showNationalityInput, setShowNationalityInput] = useState(false);
   const [showCodeWindow, setShowCodeWindow] = useState(false);
 
-  // Hook for validation
+  // Hooks for validations
   const [invalidEmail, setInvalidEmail] = useState(false);
+  const [invalidPhone, setInvalidPhone] = useState(false);
 
   // Hook for JSON string
   const [json, setJson] = useState('');
@@ -66,6 +68,10 @@ export default function Home() {
       );
   };
 
+  const validatePhone = (phone) => {
+    return isValidPhoneNumber(phone, "CA")
+  }
+
   const submit = () => {
     // Check validations
     if (email && !validateEmail(email)) {
@@ -73,6 +79,14 @@ export default function Home() {
       setInvalidEmail(true)
       return
     }
+    if (phone && !validatePhone(phone)) {
+      // Phone number validation failed
+      setInvalidPhone(true)
+      return
+    }
+    // Format phone number
+    const num = parsePhoneNumber(phone, "CA")
+    setPhone(num.format("NATIONAL"))    
     // Construct and format JSON object as a string
     // The lack of indentation within the template literal is necessary for the string to render correctly
     const formString = `{
@@ -81,7 +95,7 @@ export default function Home() {
   "address": "${address}",
   "birthDate": "${birthDate}",
   "email": "${email}",
-  "phone": "${phone}",
+  "phone": "${num.format("NATIONAL")}",
   "indigenous": ${indigenous},
   "nationality": "${nationality}"
 }`
@@ -131,13 +145,23 @@ export default function Home() {
                 className="field-margin" 
                 invalidText="Please provide a valid email address" 
                 value={email} 
+                invalid={invalidEmail} 
                 onChange={e => {
                   setEmail(e.target.value)
                   setInvalidEmail(false)
                 }} 
-                invalid={invalidEmail} 
               />
-              <TextInput id="phone" labelText="Canadian Phone Number" className="field-margin" value={phone} onChange={e => setPhone(e.target.value)} />
+              <TextInput 
+                id="phone" 
+                labelText="Canadian Phone Number" 
+                className="field-margin" 
+                value={phone} 
+                invalid={invalidPhone}
+                onChange={e => {
+                  setPhone(e.target.value)
+                  setInvalidPhone(false)
+                }} 
+              />
               <Checkbox  id="Indigenous" labelText="I identify as Indigenous" className="field-margin" onChange={(event, { checked, id }) => toggleNationalityInput(event, { checked, id })} />
               <NationalityInput show={showNationalityInput} value={nationality} onChange={e => setNationality(e.target.value)} />
               <Button type="submit" className="button-margin">Submit</Button>
