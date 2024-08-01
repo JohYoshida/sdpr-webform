@@ -95,6 +95,8 @@ export default function Home() {
       <Row>
         <Column>
           <main>
+            <link rel="stylesheet" type="text/css" href="http://ws1.postescanada-canadapost.ca/css/addresscomplete-2.50.min.css?key=ca78-gm59-wf29-cw59" />
+            <script type="text/javascript" src="http://ws1.postescanada-canadapost.ca/js/addresscomplete-2.50.min.js?key=ca78-gm59-wf29-cw59"></script>
             <Form aria-label="form body" action={submit}>              
               <TextInput id="applicant-name" labelText="Applicant Name (required)" className="field-margin" required={true} value={applicantName} onChange={e => setApplicantName(e.target.value)} />
               <RadioButtonGroup legendText="Marital Status" name="Marital Status" orientation="vertical" className="field-margin" defaultChecked={false} value={maritalStatus} onChange={v => setMaritalStatus(v)} >
