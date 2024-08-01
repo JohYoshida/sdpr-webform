@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import localFont from 'next/font/local'
 import "./globals.scss";
 
-const inter = Inter({ subsets: ["latin"] });
+const BCSans = localFont({ src: './2023_01_01_BCSans-Regular_2f.otf'})
 
 export const metadata: Metadata = {
   title: "Joh Yoshida's SDPR webform",
@@ -16,7 +16,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={inter.className}>{children}</body>
+      <body className={BCSans.className}>{children}</body>
     </html>
   );
 }
