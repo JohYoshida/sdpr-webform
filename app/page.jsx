@@ -59,8 +59,11 @@ export default function Home() {
     setIndigenous(indigenous)
   }
 
-  // Sourced from https://stackoverflow.com/questions/46155/how-can-i-validate-an-email-address-in-javascript
+  
+
+
   const validateEmail = (email) => {
+    // Sourced from https://stackoverflow.com/questions/46155/how-can-i-validate-an-email-address-in-javascript
     return String(email)
       .toLowerCase()
       .match(
