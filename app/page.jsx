@@ -40,6 +40,9 @@ export default function Home() {
   const [showNationalityInput, setShowNationalityInput] = useState(false);
   const [showCodeWindow, setShowCodeWindow] = useState(false);
 
+  // Hook for validation
+  const [invalidEmail, setInvalidEmail] = useState(false);
+
   // Hook for JSON string
   const [json, setJson] = useState('');
   
@@ -54,7 +57,22 @@ export default function Home() {
     setIndigenous(indigenous)
   }
 
+  // Sourced from https://stackoverflow.com/questions/46155/how-can-i-validate-an-email-address-in-javascript
+  const validateEmail = (email) => {
+    return String(email)
+      .toLowerCase()
+      .match(
+        /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+      );
+  };
+
   const submit = () => {
+    // Check validations
+    if (email && !validateEmail(email)) {
+      // Email validation failed
+      setInvalidEmail(true)
+      return
+    }
     // Construct and format JSON object as a string
     // The lack of indentation within the template literal is necessary for the string to render correctly
     const formString = `{
@@ -107,7 +125,18 @@ export default function Home() {
               <DatePicker datePickerType="single" className="field-margin" value={birthDate} onChange={e => setBirthDate(e[0])}>
                 <DatePickerInput id="date-of-birth" labelText="Date of Birth" placeholder="mm/dd/yyyy" className="field-margin" />
               </DatePicker>
-              <TextInput id="email" labelText="Email" className="field-margin" value={email} onChange={e => setEmail(e.target.value)} />
+              <TextInput 
+                id="email" 
+                labelText="Email" 
+                className="field-margin" 
+                invalidText="Please provide a valid email address" 
+                value={email} 
+                onChange={e => {
+                  setEmail(e.target.value)
+                  setInvalidEmail(false)
+                }} 
+                invalid={invalidEmail} 
+              />
               <TextInput id="phone" labelText="Canadian Phone Number" className="field-margin" value={phone} onChange={e => setPhone(e.target.value)} />
               <Checkbox  id="Indigenous" labelText="I identify as Indigenous" className="field-margin" onChange={(event, { checked, id }) => toggleNationalityInput(event, { checked, id })} />
               <NationalityInput show={showNationalityInput} value={nationality} onChange={e => setNationality(e.target.value)} />
