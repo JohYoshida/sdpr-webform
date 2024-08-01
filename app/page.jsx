@@ -88,8 +88,14 @@ export default function Home() {
       return
     }
     // Format phone number
-    const num = parsePhoneNumber(phone, "CA")
-    setPhone(num.format("NATIONAL"))    
+    let num; 
+    if (phone) {
+      num = parsePhoneNumber(phone, "CA")
+      num = num.format("NATIONAL")    
+      setPhone(num)
+    } else [
+      num = ""
+    ]
     // Construct and format JSON object as a string
     // The lack of indentation within the template literal is necessary for the string to render correctly
     const formString = `{
@@ -98,7 +104,7 @@ export default function Home() {
   "address": "${address}",
   "birthDate": "${birthDate}",
   "email": "${email}",
-  "phone": "${num.format("NATIONAL")}",
+  "phone": "${num}",
   "indigenous": ${indigenous},
   "nationality": "${nationality}"
 }`
@@ -158,8 +164,10 @@ export default function Home() {
                 id="phone" 
                 labelText="Canadian Phone Number" 
                 className="field-margin" 
-                value={phone} 
+                placeholder="(123) 456 7890" 
                 invalid={invalidPhone}
+                invalidText="Please enter a valid Canadian phone number"
+                value={phone} 
                 onChange={e => {
                   setPhone(e.target.value)
                   setInvalidPhone(false)
