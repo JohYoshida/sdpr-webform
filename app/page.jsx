@@ -59,9 +59,6 @@ export default function Home() {
     setIndigenous(indigenous)
   }
 
-  
-
-
   const validateEmail = (email) => {
     // Sourced from https://stackoverflow.com/questions/46155/how-can-i-validate-an-email-address-in-javascript
     return String(email)
@@ -135,16 +132,31 @@ export default function Home() {
         <Column>
           <main>
             <Form aria-label="form body" action={submit}>              
-              <TextInput id="applicant-name" labelText="Applicant Name (required)" className="field-margin" required={true} value={applicantName} onChange={e => setApplicantName(e.target.value)} />
-              <RadioButtonGroup legendText="Marital Status" name="Marital Status" orientation="vertical" className="field-margin" defaultChecked={false} value={maritalStatus} onChange={v => setMaritalStatus(v)} >
-                <RadioButton id="married" labelText="Married" value="married" />
-                <RadioButton id="common-law" labelText="Living common-law" value="common-law" />
-                <RadioButton id="separated" labelText="Separated" value="separated" />
-                <RadioButton id="widowed" labelText="Widowed" value="widowed" />
-                <RadioButton id="divorced" labelText="Divorced" value="divorced" />
-                <RadioButton id="single" labelText="Single" value="single" />
+              <TextInput 
+                id="applicant-name" 
+                labelText="Applicant Name (required)" 
+                className="field-margin" 
+                required={true} 
+                value={applicantName} 
+                onChange={e => setApplicantName(e.target.value)} 
+              />
+              <RadioButtonGroup 
+                legendText="Marital Status" 
+                name="Marital Status" 
+                orientation="vertical" 
+                className="field-margin" 
+                defaultChecked={false} 
+                value={maritalStatus} 
+                onChange={v => setMaritalStatus(v)} 
+              >
+                <RadioButton id="married" value="married" labelText="Married" />
+                <RadioButton id="common-law" value="common-law" labelText="Living common-law" />
+                <RadioButton id="separated" value="separated" labelText="Separated" />
+                <RadioButton id="widowed" value="widowed" labelText="Widowed" />
+                <RadioButton id="divorced" value="divorced" labelText="Divorced" />
+                <RadioButton id="single" value="single" labelText="Single" />
               </RadioButtonGroup>
-              <TextInput id="canadian-address" labelText="Canadian Address" className="field-margin" onChange={e => setAddress(e.target.value)} value={address} />
+              <TextInput id="canadian-address" labelText="Canadian Address" className="field-margin" value={address} onChange={e => setAddress(e.target.value)} />
               <DatePicker datePickerType="single" className="field-margin" value={birthDate} onChange={e => setBirthDate(e[0])}>
                 <DatePickerInput id="date-of-birth" labelText="Date of Birth" placeholder="mm/dd/yyyy" className="field-margin" />
               </DatePicker>
@@ -162,7 +174,7 @@ export default function Home() {
               />
               <TextInput 
                 id="phone" 
-                labelText="Canadian Phone Number" 
+                labelText="Canadian Phone Number"
                 className="field-margin" 
                 placeholder="(123) 456 7890" 
                 invalid={invalidPhone}
@@ -173,7 +185,12 @@ export default function Home() {
                   setInvalidPhone(false)
                 }} 
               />
-              <Checkbox  id="Indigenous" labelText="I identify as Indigenous" className="field-margin" onChange={(event, { checked, id }) => toggleNationalityInput(event, { checked, id })} />
+              <Checkbox 
+                id="Indigenous" 
+                labelText="I identify as Indigenous" 
+                className="field-margin" 
+                onChange={(event, { checked, id }) => toggleNationalityInput(event, { checked, id })} 
+              />
               <NationalityInput show={showNationalityInput} value={nationality} onChange={e => setNationality(e.target.value)} />
               <Button type="submit" className="button-margin">Submit</Button>
             </Form>
