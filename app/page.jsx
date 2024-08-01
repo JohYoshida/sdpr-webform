@@ -1,8 +1,9 @@
 'use client'
 import { useState } from 'react'
-
 import { FlexGrid, Row, Column } from '@carbon/react'
 import { Form, Button, Checkbox, CodeSnippet, DatePicker, DatePickerInput, RadioButton, RadioButtonGroup, TextInput } from '@carbon/react'
+import Image from 'next/image'
+import logo from '../public/SDPR logo.png'
 
 function NationalityInput({ show, value, onChange }) {
   if (show) {
@@ -73,12 +74,26 @@ export default function Home() {
 
   return (
     <FlexGrid>
+      <header className="header" >
+        <div className="image">
+          <Image 
+            src={logo} 
+            width={123 * 2.33}
+            height={123}
+            priority={true}
+            placeholder="blur"
+            // fill={true}
+            // sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            alt="Fake logo for the Ministry of Social Development and Poverty Reduction" 
+          />
+        </div>
+        <div className="title">
+          <h1>Applicant Form</h1>
+          <h2>ISD Forms Modernization</h2>
+        </div>
+      </header>
       <Row>
         <Column>
-          <header>
-            <h1>Ministry of Social Development and Poverty Reduction</h1>
-          </header>
-
           <main>
             <Form aria-label="form body" action={submit}>              
               <TextInput id="applicant-name" labelText="Applicant Name (required)" className="field-margin" required={true} value={applicantName} onChange={e => setApplicantName(e.target.value)} />
