@@ -1,8 +1,10 @@
 'use client'
 import { useState } from 'react'
-
 import { FlexGrid, Row, Column } from '@carbon/react'
 import { Form, Button, Checkbox, CodeSnippet, DatePicker, DatePickerInput, RadioButton, RadioButtonGroup, TextInput } from '@carbon/react'
+import { isValidPhoneNumber, parsePhoneNumber } from 'libphonenumber-js'
+import Image from 'next/image'
+import logo from '../public/SDPR logo.png'
 
 function NationalityInput({ show, value, onChange }) {
   if (show) {
@@ -39,6 +41,10 @@ export default function Home() {
   const [showNationalityInput, setShowNationalityInput] = useState(false);
   const [showCodeWindow, setShowCodeWindow] = useState(false);
 
+  // Hooks for validations
+  const [invalidEmail, setInvalidEmail] = useState(false);
+  const [invalidPhone, setInvalidPhone] = useState(false);
+
   // Hook for JSON string
   const [json, setJson] = useState('');
   
@@ -53,7 +59,40 @@ export default function Home() {
     setIndigenous(indigenous)
   }
 
+  const validateEmail = (email) => {
+    // Sourced from https://stackoverflow.com/questions/46155/how-can-i-validate-an-email-address-in-javascript
+    return String(email)
+      .toLowerCase()
+      .match(
+        /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+      );
+  };
+
+  const validatePhone = (phone) => {
+    return isValidPhoneNumber(phone, "CA")
+  }
+
   const submit = () => {
+    // Check validations
+    if (email && !validateEmail(email)) {
+      // Email validation failed
+      setInvalidEmail(true)
+      return
+    }
+    if (phone && !validatePhone(phone)) {
+      // Phone number validation failed
+      setInvalidPhone(true)
+      return
+    }
+    // Format phone number
+    let num; 
+    if (phone) {
+      num = parsePhoneNumber(phone, "CA")
+      num = num.format("NATIONAL")    
+      setPhone(num)
+    } else [
+      num = ""
+    ]
     // Construct and format JSON object as a string
     // The lack of indentation within the template literal is necessary for the string to render correctly
     const formString = `{
@@ -62,7 +101,7 @@ export default function Home() {
   "address": "${address}",
   "birthDate": "${birthDate}",
   "email": "${email}",
-  "phone": "${phone}",
+  "phone": "${num}",
   "indigenous": ${indigenous},
   "nationality": "${nationality}"
 }`
@@ -73,30 +112,85 @@ export default function Home() {
 
   return (
     <FlexGrid>
+      <header className="header" >
+        <div className="image">
+          <Image 
+            src={logo} 
+            width={123 * 2.33}
+            height={123}
+            priority={true}
+            placeholder="blur"
+            alt="Fake logo for the Ministry of Social Development and Poverty Reduction" 
+          />
+        </div>
+        <div className="title">
+          <h1>Applicant Form</h1>
+          <h2>ISD Forms Modernization</h2>
+        </div>
+      </header>
       <Row>
         <Column>
-          <header>
-            <h1>Ministry of Social Development and Poverty Reduction</h1>
-          </header>
-
           <main>
             <Form aria-label="form body" action={submit}>              
-              <TextInput id="applicant-name" labelText="Applicant Name (required)" className="field-margin" required={true} value={applicantName} onChange={e => setApplicantName(e.target.value)} />
-              <RadioButtonGroup legendText="Marital Status" name="Marital Status" orientation="vertical" className="field-margin" defaultChecked={false} value={maritalStatus} onChange={v => setMaritalStatus(v)} >
-                <RadioButton id="married" labelText="Married" value="married" />
-                <RadioButton id="common-law" labelText="Living common-law" value="common-law" />
-                <RadioButton id="separated" labelText="Separated" value="separated" />
-                <RadioButton id="widowed" labelText="Widowed" value="widowed" />
-                <RadioButton id="divorced" labelText="Divorced" value="divorced" />
-                <RadioButton id="single" labelText="Single" value="single" />
+              <TextInput 
+                id="applicant-name" 
+                labelText="Applicant Name (required)" 
+                className="field-margin" 
+                required={true} 
+                value={applicantName} 
+                onChange={e => setApplicantName(e.target.value)} 
+              />
+              <RadioButtonGroup 
+                legendText="Marital Status" 
+                name="Marital Status" 
+                orientation="vertical" 
+                className="field-margin" 
+                defaultChecked={false} 
+                value={maritalStatus} 
+                onChange={v => setMaritalStatus(v)} 
+              >
+                <RadioButton id="married" value="married" labelText="Married" />
+                <RadioButton id="common-law" value="common-law" labelText="Living common-law" />
+                <RadioButton id="separated" value="separated" labelText="Separated" />
+                <RadioButton id="widowed" value="widowed" labelText="Widowed" />
+                <RadioButton id="divorced" value="divorced" labelText="Divorced" />
+                <RadioButton id="single" value="single" labelText="Single" />
               </RadioButtonGroup>
-              <TextInput id="canadian-address" labelText="Canadian Address" className="field-margin" onChange={e => setAddress(e.target.value)} value={address} />
+              <TextInput id="canadian-address" labelText="Canadian Address" className="field-margin" value={address} onChange={e => setAddress(e.target.value)} />
               <DatePicker datePickerType="single" className="field-margin" value={birthDate} onChange={e => setBirthDate(e[0])}>
                 <DatePickerInput id="date-of-birth" labelText="Date of Birth" placeholder="mm/dd/yyyy" className="field-margin" />
               </DatePicker>
-              <TextInput id="email" labelText="Email" className="field-margin" value={email} onChange={e => setEmail(e.target.value)} />
-              <TextInput id="phone" labelText="Canadian Phone Number" className="field-margin" value={phone} onChange={e => setPhone(e.target.value)} />
-              <Checkbox  id="Indigenous" labelText="I identify as Indigenous" className="field-margin" onChange={(event, { checked, id }) => toggleNationalityInput(event, { checked, id })} />
+              <TextInput 
+                id="email" 
+                labelText="Email" 
+                className="field-margin" 
+                invalidText="Please provide a valid email address" 
+                value={email} 
+                invalid={invalidEmail} 
+                onChange={e => {
+                  setEmail(e.target.value)
+                  setInvalidEmail(false)
+                }} 
+              />
+              <TextInput 
+                id="phone" 
+                labelText="Canadian Phone Number"
+                className="field-margin" 
+                placeholder="(123) 456 7890" 
+                invalid={invalidPhone}
+                invalidText="Please enter a valid Canadian phone number"
+                value={phone} 
+                onChange={e => {
+                  setPhone(e.target.value)
+                  setInvalidPhone(false)
+                }} 
+              />
+              <Checkbox 
+                id="Indigenous" 
+                labelText="I identify as Indigenous" 
+                className="field-margin" 
+                onChange={(event, { checked, id }) => toggleNationalityInput(event, { checked, id })} 
+              />
               <NationalityInput show={showNationalityInput} value={nationality} onChange={e => setNationality(e.target.value)} />
               <Button type="submit" className="button-margin">Submit</Button>
             </Form>
