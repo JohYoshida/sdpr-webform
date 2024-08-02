@@ -5,11 +5,27 @@ import { Form, Button, Checkbox, CodeSnippet, DatePicker, DatePickerInput, Radio
 import { isValidPhoneNumber, parsePhoneNumber } from 'libphonenumber-js'
 import Image from 'next/image'
 import logo from '../public/SDPR logo.png'
+// Constants
+const MAXTEXT = 200 // Maximum character count for TextInput components
 
-function NationalityInput({ show, value, onChange }) {
-  if (show) {
+// // //
+
+// Components
+
+function NationalityInput({ onChange, props }) {
+  if (props.show) {
     return (
-      <TextInput id="nationality" labelText="Nationality" className="field-margin" value={value} onChange={onChange} />
+      <TextInput 
+        id="nationality" 
+        labelText="Nationality" 
+        className="field-margin" 
+        maxCount={MAXTEXT}
+        enableCounter={props.counter}
+        invalid={props.invalid}
+        invalidText={`Max characters: ${MAXTEXT}`} 
+        value={props.value} 
+        onChange={onChange} 
+      />
     );
   } else {
     return null;
@@ -25,6 +41,10 @@ function CodeWindow({ show, json }) {
     return null;
   }
 }
+
+// // //
+
+// Main
 
 export default function Home() {
   // Hooks for form fields
@@ -42,8 +62,18 @@ export default function Home() {
   const [showCodeWindow, setShowCodeWindow] = useState(false);
 
   // Hooks for validations
+  const [invalidName, setInvalidName] = useState(false);
+  const [invalidAddress, setInvalidAddress] = useState(false);
   const [invalidEmail, setInvalidEmail] = useState(false);
+  const [invalidEmailMsg, setInvalidEmailMsg] = useState("")
   const [invalidPhone, setInvalidPhone] = useState(false);
+  const [invalidNationality, setInvalidNationality] = useState(false)
+
+  // Hooks for character counters
+  const [counterName, setCounterName] = useState(false);
+  const [counterAddress, setCounterAddress] = useState(false);
+  const [counterEmail, setCounterEmail] = useState(false);
+  const [counterNationality, setCounterNationality] = useState(false);
 
   // Hook for JSON string
   const [json, setJson] = useState('');
@@ -56,9 +86,10 @@ export default function Home() {
       setShowNationalityInput(false);
       setNationality(''); // clear NationalityInput value
     }
-    setIndigenous(indigenous)
+    setIndigenous(indigenous);
   }
 
+  // Validate email
   const validateEmail = (email) => {
     // Sourced from https://stackoverflow.com/questions/46155/how-can-i-validate-an-email-address-in-javascript
     return String(email)
@@ -68,20 +99,52 @@ export default function Home() {
       );
   };
 
+  // Validate phone
   const validatePhone = (phone) => {
     return isValidPhoneNumber(phone, "CA")
   }
 
+  // Handle form submission
   const submit = () => {
     // Check validations
+    let invalid = false
+    if (applicantName.length > MAXTEXT) {
+      // Applicant name exceeds max character count
+      invalid = true
+      setInvalidName(true)
+      setCounterName(true)
+    }
+    if (address.length > MAXTEXT) {
+      // Address exceeds max character count
+      invalid = true
+      setInvalidAddress(true)
+      setCounterAddress(true)
+    }
+    if (email.length > MAXTEXT) {
+      // Email exceeds max character count
+      invalid = true
+      setInvalidEmail(true)
+      setInvalidEmailMsg(`Max characters: ${MAXTEXT}`)
+      setCounterEmail(true)
+    }
+    if (nationality.length > MAXTEXT) {
+      // Email exceeds max character count
+      invalid = true
+      setInvalidNationality(true)
+      setCounterNationality(true)
+    }
     if (email && !validateEmail(email)) {
       // Email validation failed
+      invalid = true
       setInvalidEmail(true)
-      return
+      setInvalidEmailMsg("Please provide a valid email address")
     }
     if (phone && !validatePhone(phone)) {
       // Phone number validation failed
+      invalid = true
       setInvalidPhone(true)
+    }
+    if (invalid) {
       return
     }
     // Format phone number
@@ -94,7 +157,7 @@ export default function Home() {
       num = ""
     ]
     // Construct and format JSON object as a string
-    // The lack of indentation within the template literal is necessary for the string to render correctly
+    // The lack of indentation within the template literal is necessary for the string to render correctly in the CodeWindow
     const formString = `{
   "applicantName": "${applicantName}",
   "maritalStatus": "${maritalStatus}",
@@ -110,6 +173,7 @@ export default function Home() {
     setShowCodeWindow(true)
   }
 
+  // Form 
   return (
     <FlexGrid>
       <header className="header" >
@@ -135,10 +199,17 @@ export default function Home() {
               <TextInput 
                 id="applicant-name" 
                 labelText="Applicant Name (required)" 
-                className="field-margin" 
+                className="field-margin"
+                maxCount={MAXTEXT}
+                enableCounter={counterName}
+                invalid={invalidName}
+                invalidText={`Max characters: ${MAXTEXT}`}
                 required={true} 
                 value={applicantName} 
-                onChange={e => setApplicantName(e.target.value)} 
+                onChange={e => {
+                  setApplicantName(e.target.value)
+                  setInvalidName(false)
+                }} 
               />
               <RadioButtonGroup 
                 legendText="Marital Status" 
@@ -156,7 +227,20 @@ export default function Home() {
                 <RadioButton id="divorced" value="divorced" labelText="Divorced" />
                 <RadioButton id="single" value="single" labelText="Single" />
               </RadioButtonGroup>
-              <TextInput id="canadian-address" labelText="Canadian Address" className="field-margin" value={address} onChange={e => setAddress(e.target.value)} />
+              <TextInput 
+                id="canadian-address" 
+                labelText="Canadian Address" 
+                className="field-margin" 
+                maxCount={MAXTEXT}
+                enableCounter={counterAddress}
+                invalid={invalidAddress}
+                invalidText={`Max characters: ${MAXTEXT}`}
+                value={address} 
+                onChange={e => {
+                  setAddress(e.target.value)
+                  setInvalidAddress(false)
+                }} 
+              />
               <DatePicker datePickerType="single" className="field-margin" value={birthDate} onChange={e => setBirthDate(e[0])}>
                 <DatePickerInput id="date-of-birth" labelText="Date of Birth" placeholder="mm/dd/yyyy" className="field-margin" />
               </DatePicker>
@@ -164,9 +248,11 @@ export default function Home() {
                 id="email" 
                 labelText="Email" 
                 className="field-margin" 
-                invalidText="Please provide a valid email address" 
+                maxCount={MAXTEXT}
+                enableCounter={counterEmail}
+                invalid={invalidEmail}
+                invalidText={invalidEmailMsg} 
                 value={email} 
-                invalid={invalidEmail} 
                 onChange={e => {
                   setEmail(e.target.value)
                   setInvalidEmail(false)
@@ -191,7 +277,18 @@ export default function Home() {
                 className="field-margin" 
                 onChange={(event, { checked, id }) => toggleNationalityInput(event, { checked, id })} 
               />
-              <NationalityInput show={showNationalityInput} value={nationality} onChange={e => setNationality(e.target.value)} />
+              <NationalityInput 
+                props={{
+                  show: showNationalityInput, 
+                  value: nationality,
+                  invalid: invalidNationality,
+                  counter: counterNationality
+                }}
+                onChange={e => {
+                  setNationality(e.target.value)
+                  setInvalidNationality(false)
+                }} 
+              />
               <Button type="submit" className="button-margin">Submit</Button>
             </Form>
             <div>
