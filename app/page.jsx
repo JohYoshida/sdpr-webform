@@ -156,13 +156,19 @@ export default function Home() {
     } else [
       num = ""
     ]
+    // Handle undefined date of birth
+    let dob = birthDate
+    if (birthDate === undefined) {
+      setBirthDate("")
+      dob = ""
+    }
     // Construct and format JSON object as a string
     // The lack of indentation within the template literal is necessary for the string to render correctly in the CodeWindow
     const formString = `{
   "applicantName": "${applicantName}",
   "maritalStatus": "${maritalStatus}",
   "address": "${address}",
-  "birthDate": "${birthDate}",
+  "birthDate": "${dob}",
   "email": "${email}",
   "phone": "${num}",
   "indigenous": ${indigenous},
