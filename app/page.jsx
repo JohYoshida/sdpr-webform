@@ -26,19 +26,19 @@ function NationalityInput({ onChange, props }) {
         value={props.value} 
         onChange={onChange} 
       />
-    );
+    )
   } else {
-    return null;
+    return null
   }
 }
 
 function CodeWindow({ show, json }) {
   if (show) {
     return (
-      <CodeSnippet type="multi" feedback="Copied to clipboard">{json}</CodeSnippet>
-    );
+      <CodeSnippet type="multi" feedback="Copied to clipboard" >{json}</CodeSnippet>
+    )
   } else {
-    return null;
+    return null
   }
 }
 
@@ -48,45 +48,45 @@ function CodeWindow({ show, json }) {
 
 export default function Home() {
   // Hooks for form fields
-  const [applicantName, setApplicantName] = useState('');
-  const [maritalStatus, setMaritalStatus] = useState('');
-  const [address, setAddress] = useState('');
-  const [birthDate, setBirthDate] = useState('');
-  const [email, setEmail] = useState('');
-  const [phone, setPhone] = useState('');
-  const [indigenous, setIndigenous] = useState(false);
-  const [nationality, setNationality] = useState('');
+  const [applicantName, setApplicantName] = useState('')
+  const [maritalStatus, setMaritalStatus] = useState('')
+  const [address, setAddress] = useState('')
+  const [birthDate, setBirthDate] = useState('')
+  const [email, setEmail] = useState('')
+  const [phone, setPhone] = useState('')
+  const [indigenous, setIndigenous] = useState(false)
+  const [nationality, setNationality] = useState('')
   
   // Hook for toggling visibility of components
-  const [showNationalityInput, setShowNationalityInput] = useState(false);
-  const [showCodeWindow, setShowCodeWindow] = useState(false);
+  const [showNationalityInput, setShowNationalityInput] = useState(false)
+  const [showCodeWindow, setShowCodeWindow] = useState(false)
 
   // Hooks for validations
-  const [invalidName, setInvalidName] = useState(false);
-  const [invalidAddress, setInvalidAddress] = useState(false);
-  const [invalidEmail, setInvalidEmail] = useState(false);
+  const [invalidName, setInvalidName] = useState(false)
+  const [invalidAddress, setInvalidAddress] = useState(false)
+  const [invalidEmail, setInvalidEmail] = useState(false)
   const [invalidEmailMsg, setInvalidEmailMsg] = useState("")
-  const [invalidPhone, setInvalidPhone] = useState(false);
+  const [invalidPhone, setInvalidPhone] = useState(false)
   const [invalidNationality, setInvalidNationality] = useState(false)
 
   // Hooks for character counters
-  const [counterName, setCounterName] = useState(false);
-  const [counterAddress, setCounterAddress] = useState(false);
-  const [counterEmail, setCounterEmail] = useState(false);
-  const [counterNationality, setCounterNationality] = useState(false);
+  const [counterName, setCounterName] = useState(false)
+  const [counterAddress, setCounterAddress] = useState(false)
+  const [counterEmail, setCounterEmail] = useState(false)
+  const [counterNationality, setCounterNationality] = useState(false)
 
   // Hook for JSON string
-  const [json, setJson] = useState('');
+  const [json, setJson] = useState('')
   
   // Toggle visibility of NationalityInput
   const toggleNationalityInput = (event, { checked: indigenous, id }) => { 
     if (indigenous) {
-      setShowNationalityInput(true); 
+      setShowNationalityInput(true) 
     } else {
-      setShowNationalityInput(false);
-      setNationality(''); // clear NationalityInput value
+      setShowNationalityInput(false)
+      setNationality('') // clear NationalityInput value
     }
-    setIndigenous(indigenous);
+    setIndigenous(indigenous)
   }
 
   // Validate email
@@ -95,9 +95,9 @@ export default function Home() {
     return String(email)
       .toLowerCase()
       .match(
-        /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-      );
-  };
+        /^(([^<>()[\]\\.,:\s@"]+(\.[^<>()[\]\\.,:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+      )
+  }
 
   // Validate phone
   const validatePhone = (phone) => {
@@ -148,7 +148,7 @@ export default function Home() {
       return
     }
     // Format phone number
-    let num; 
+    let num 
     if (phone) {
       num = parsePhoneNumber(phone, "CA")
       num = num.format("NATIONAL")    
@@ -156,13 +156,19 @@ export default function Home() {
     } else [
       num = ""
     ]
+    // Handle undefined date of birth
+    let dob = birthDate
+    if (birthDate === undefined) {
+      setBirthDate("")
+      dob = ""
+    }
     // Construct and format JSON object as a string
     // The lack of indentation within the template literal is necessary for the string to render correctly in the CodeWindow
     const formString = `{
   "applicantName": "${applicantName}",
   "maritalStatus": "${maritalStatus}",
   "address": "${address}",
-  "birthDate": "${birthDate}",
+  "birthDate": "${dob}",
   "email": "${email}",
   "phone": "${num}",
   "indigenous": ${indigenous},
@@ -177,7 +183,7 @@ export default function Home() {
   return (
     <FlexGrid>
       <header className="header" >
-        <div className="image">
+        <div className="image" >
           <Image 
             src={logo} 
             width={123 * 2.33}
@@ -187,7 +193,7 @@ export default function Home() {
             alt="Fake logo for the Ministry of Social Development and Poverty Reduction" 
           />
         </div>
-        <div className="title">
+        <div className="title" >
           <h1>Applicant Form</h1>
           <h2>ISD Forms Modernization</h2>
         </div>
@@ -289,7 +295,7 @@ export default function Home() {
                   setInvalidNationality(false)
                 }} 
               />
-              <Button type="submit" className="button-margin">Submit</Button>
+              <Button type="submit" className="button-margin" >Submit</Button>
             </Form>
             <div>
               <CodeWindow show={showCodeWindow} json={json}/>
@@ -306,5 +312,5 @@ export default function Home() {
         </Column>
       </Row>
     </FlexGrid>
-  );
+  )
 }
